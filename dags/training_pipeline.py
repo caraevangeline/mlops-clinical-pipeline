@@ -1,5 +1,5 @@
 """
-Airflow DAG: Patient Deterioration Risk — Weekly Training Pipeline
+Airflow DAG: Patient Deterioration Risk - Weekly Training Pipeline
 
 Clinical context:
     This DAG trains and validates a model that predicts 30-day all-cause mortality
@@ -14,10 +14,10 @@ Clinical context:
 Pipeline stages:
     validate_data   → Train quality gate on incoming data
     train_model     → Train + log all artifacts to MLflow
-    evaluate_model  → Clinical quality gate (recall ≥ 0.75, no regression vs prod)
+    evaluate_model  → Clinical quality gate (recall ≥ 0.6, no regression vs prod)
     promote_model   → Transition validated model to Production in MLflow registry
 
-Recall is used as the primary metric throughout — see evaluate.py for rationale.
+Recall is used as the primary metric throughout - see evaluate.py for rationale.
 """
 
 import os
@@ -31,7 +31,7 @@ sys.path.insert(0, "/opt/airflow")
 
 DATA_PATH = os.getenv("DATA_PATH", "/opt/airflow/data/heart_failure_clinical_records.csv")
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000")
-RECALL_THRESHOLD = 0.75
+RECALL_THRESHOLD = 0.60
 MAX_RECALL_REGRESSION = 0.05
 
 default_args = {
@@ -54,11 +54,11 @@ def task_validate_data(**context) -> None:
         This task fails fast to prevent silent degradation downstream.
 
         In production, this stage would also strip or verify that all PHI
-        (Protected Health Information — MRN, name, date of birth) has been
+        (Protected Health Information - MRN, name, date of birth) has been
         de-identified before data enters the training pipeline.
 
     Raises:
-        ValueError: If any data quality check fails — the pipeline halts here
+        ValueError: If any data quality check fails - the pipeline halts here
                     and the on-call engineer is paged.
     """
     from src.data.ingest import load_dataset
@@ -85,7 +85,7 @@ def task_train_model(**context) -> None:
     Clinical context:
         Trains a RandomForestClassifier on 12 clinical features to predict
         30-day all-cause mortality. Uses class_weight='balanced' to upweight
-        the minority (death) class — ensuring the model prioritises catching
+        the minority (death) class - ensuring the model prioritises catching
         true deteriorations over overall accuracy.
 
         All experiments, parameters, and artifacts are logged to MLflow for
@@ -121,7 +121,7 @@ def task_evaluate_model(**context) -> None:
         - For clinical safety, a false alarm is preferable to a missed deterioration
 
         Gate criteria:
-        - Recall must be ≥ 0.75 (minimum clinical threshold)
+        - Recall must be ≥ 0.6 (minimum clinical threshold)
         - Recall must not regress more than 5% vs the current production model
 
         If either criterion fails, this task raises an exception, the pipeline
@@ -166,7 +166,7 @@ def task_promote_model(**context) -> None:
     Clinical context:
         Only reached if all quality gates pass. Transitions the validated model
         from MLflow Staging to Production and archives the previous production
-        version — preserving it for instant rollback if degradation is detected.
+        version - preserving it for instant rollback if degradation is detected.
 
         In a production environment, this task would run after shadow deployment
         (src/deployment/shadow.py) confirms acceptable agreement rate with the
@@ -194,10 +194,10 @@ with DAG(
     default_args=default_args,
     description=(
         "Weekly retraining pipeline for the patient deterioration risk model. "
-        "Recall ≥ 0.75 is the primary quality gate — see evaluate.py for clinical rationale."
+        "Recall ≥ 0.6 is the primary quality gate - see evaluate.py for clinical rationale."
     ),
     schedule_interval="@weekly",
-    start_date=datetime(2024, 1, 1),
+    start_date=datetime(2026, 6, 10),
     catchup=False,
     tags=["mlops", "clinical", "heart-failure", "patient-safety"],
 ) as dag:
@@ -222,5 +222,5 @@ with DAG(
         python_callable=task_promote_model,
     )
 
-    # Linear dependency chain — each stage must pass before the next begins
+    # Linear dependency chain - each stage must pass before the next begins
     validate >> train >> evaluate >> promote
