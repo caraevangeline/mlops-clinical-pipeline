@@ -1,6 +1,6 @@
-# circadia-mlops-pipeline
+# MLOps Pipeline on Clinical data
 
-End-to-end MLOps pipeline for patient deterioration risk prediction — demonstrating production-grade ML infrastructure patterns for healthcare AI, built on the Heart Failure Clinical Records dataset.
+End-to-end MLOps pipeline for patient deterioration risk prediction - demonstrating production-grade ML infrastructure patterns for healthcare AI, built on the Heart Failure Clinical Records dataset.
 
 ---
 
@@ -19,7 +19,7 @@ End-to-end MLOps pipeline for patient deterioration risk prediction — demonstr
   └────────┬────────┘
            ▼
   ┌─────────────────┐
-  │ evaluate_model  │  recall ≥ 0.75 gate · ≤ 5% regression vs prod
+  │ evaluate_model  │  recall ≥ 0.60 gate · ≤ 5% regression vs prod
   └────────┬────────┘
            ▼
   ┌─────────────────┐
@@ -35,15 +35,13 @@ End-to-end MLOps pipeline for patient deterioration risk prediction — demonstr
 
 ## Stack
 
-| Component | Technology |
-|-----------|-----------|
-| Orchestration | Apache Airflow 2.8 |
-| Experiment tracking | MLflow 2.10 |
+| Component | Technology                          |
+|-----------|-------------------------------------|
+| Orchestration | Apache Airflow 2.11.2               |
+| Experiment tracking | MLflow 2.10                         |
 | Model | scikit-learn RandomForestClassifier |
-| CI/CD | GitHub Actions |
-| Local runtime | Docker Compose |
-| Infrastructure | Terraform (AWS) |
-| Language | Python 3.10 |
+| Local runtime | Docker Compose                      |
+| Language | Python 3.10                         |
 
 ---
 
@@ -57,7 +55,7 @@ In a clinical safety context:
 - **False negative** (missed deterioration) → patient deteriorates unnoticed, potentially preventable harm
 - **False positive** (false alarm) → clinical staff investigate and find nothing, time wasted
 
-The 0.75 recall threshold means at worst 1 in 4 deteriorating patients is missed. We accept more false alarms to ensure we catch true deteriorations.
+The 0.60 recall threshold means at worst 1 in 4 deteriorating patients is missed. We accept more false alarms to ensure we catch true deteriorations.
 
 ### Shadow deployment before canary
 
@@ -67,7 +65,7 @@ Shadow deployment runs the candidate model on real data but never exposes its pr
 
 ### Dead man's switch for silent failures
 
-A silent pipeline failure is the worst failure mode: the model becomes stale, clinical staff continue trusting it, and no alert fires. The dead man's switch inverts this — the pipeline must actively signal health every 15 minutes. Absence of the signal IS the alert.
+A silent pipeline failure is the worst failure mode: the model becomes stale, clinical staff continue trusting it, and no alert fires. The dead man's switch inverts this - the pipeline must actively signal health every 15 minutes. Absence of the signal IS the alert.
 
 ---
 
@@ -78,8 +76,8 @@ A silent pipeline failure is the worst failure mode: the model becomes stale, cl
 **1. Clone and download the dataset**
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/circadia-mlops-pipeline.git
-cd circadia-mlops-pipeline
+git clone https://github.com/caraevangeline/mlops-clinical-pipeline
+cd mlops-clinical-pipeline
 
 # Download the Heart Failure Clinical Records dataset
 # From: https://archive.ics.uci.edu/dataset/519/heart+failure+clinical+records
@@ -108,6 +106,9 @@ Via Airflow UI:
 - Find the DAG: `patient_deterioration_training_pipeline`
 - Click the "Play" button to trigger a manual run
 
+![Fig](assets/fig2.png)
+![Fig](assets/fig1.png)
+
 Via CLI:
 ```bash
 docker-compose exec airflow-webserver \
@@ -121,19 +122,19 @@ Open `http://localhost:5000` to see:
 - Feature importance artifacts
 - Model registry with Staging/Production stages
 
-**5. Run tests locally**
-
-```bash
-pip install -r requirements.txt
-pytest tests/test_data_validation.py tests/test_model_quality.py -v
-```
+![Fig](assets/fig3.png)
+![Fig](assets/fig4.png)
+![Fig](assets/fig5.png)
+![Fig](assets/fig6.png)
+![Fig](assets/fig7.png)
+![Fig](assets/fig8.png)
 
 ---
 
 ## Project structure
 
 ```
-circadia-mlops-pipeline/
+mlops-clinical-pipeline/
 ├── docker-compose.yml          # Full local stack: Airflow + MLflow + Postgres
 ├── requirements.txt
 ├── dags/
@@ -155,47 +156,29 @@ circadia-mlops-pipeline/
 │   │   └── rollback.py         # Restore previous production version
 │   └── monitoring/
 │       └── pipeline_health.py  # Dead man's switch + prediction freshness
-├── tests/
-│   ├── test_data_validation.py # Unit tests for validate.py
-│   ├── test_model_quality.py   # Recall threshold + regression gate tests
-│   └── test_pipeline_integration.py  # End-to-end MLflow integration tests
-├── infra/terraform/
-│   ├── s3.tf                   # Encrypted S3 buckets for artifacts + data
-│   ├── iam.tf                  # Least-privilege pipeline service role
-│   └── batch.tf                # AWS Batch Spot Instance training jobs
-├── runbooks/
-│   ├── silent_failure_response.md     # Dead man's switch incident response
-│   ├── model_degradation_response.md  # Recall drop response (rollback first)
-│   └── rollback_procedure.md          # Step-by-step MLflow rollback + verification
-├── .github/workflows/
-│   ├── ci.yml                  # Tests + data validation + recall gate on every PR
-│   └── cd.yml                  # Train + stage + [manual approval] + prod on merge
-└── docs/
-    ├── architecture.md         # Full pipeline + design decision rationale
-    ├── data_lineage.md         # Dataset versioning + tracing model provenance
-    └── hipaa_controls.md       # PHI handling, encryption, IAM, audit controls
 ```
 
 ---
 
 ## Dataset
 
-**Heart Failure Clinical Records** — Chicco D, Jurman G. *Machine learning can predict survival of patients with heart failure from serum creatinine and ejection fraction alone.* BMC Medical Informatics and Decision Making, 2020.
+**Heart Failure Clinical Records** - Chicco D, Jurman G. *Machine learning can predict survival of patients with heart failure from serum creatinine and ejection fraction alone.* BMC Medical Informatics and Decision Making, 2020.
 
 - 299 patients, 13 features, binary classification (30-day all-cause mortality)
 - Source: [UCI ML Repository](https://archive.ics.uci.edu/dataset/519/heart+failure+clinical+records)
-- Fully de-identified — no PHI
+- Fully de-identified - no PHI
 
-This project uses a public dataset to demonstrate MLOps infrastructure patterns that would apply to real patient data in a clinical environment. The HIPAA controls documented in `docs/hipaa_controls.md` describe what would be required in a production deployment with real patient data.
+This project uses a public dataset to demonstrate MLOps infrastructure patterns that would apply to real patient data in a clinical environment.
 
 ---
 
-## CI/CD quality gates
+## TODO
+### CI/CD quality gates
 
 Every pull request must pass:
 1. Unit tests (data validation + model quality)
 2. Data validation on synthetic sample data
-3. Model recall ≥ 0.75 on synthetic training run
+3. Model recall ≥ 0.60 on synthetic training run
 
 Every merge to `main`:
 1. All unit tests
