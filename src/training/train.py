@@ -3,7 +3,7 @@ Model training for the patient deterioration pipeline.
 
 Clinical context:
     Trains a RandomForestClassifier tuned for recall on the minority (death) class.
-    All runs are fully logged to MLflow — every hyperparameter, metric, and artifact
+    All runs are fully logged to MLflow - every hyperparameter, metric, and artifact
     is stored to support audit trails and model governance requirements.
 
     class_weight='balanced' upweights samples from the minority class during
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 MODEL_NAME = "patient_deterioration_model"
 EXPERIMENT_NAME = "heart_failure_prediction"
 
-# class_weight='balanced' is the key clinical safety choice — it tells sklearn
+# class_weight='balanced' is the key clinical safety choice - it tells sklearn
 # to weight each class inversely proportional to its frequency. This means
 # errors on the minority (death) class are penalised more during training.
 HYPERPARAMS = {
@@ -58,7 +58,7 @@ def train_model(
     Train a RandomForestClassifier and register it in the MLflow model registry.
 
     Clinical context:
-        Uses a fixed random_state for reproducibility — every training run on
+        Uses a fixed random_state for reproducibility - every training run on
         the same data must produce the same model for regulatory auditability.
         The test split is stratified to ensure the minority (death) class is
         represented proportionally in both train and test sets.
@@ -119,7 +119,7 @@ def train_model(
         )
 
         logger.info(
-            "Training complete — recall=%.3f, precision=%.3f, f1=%.3f, roc_auc=%.3f",
+            "Training complete - recall=%.3f, precision=%.3f, f1=%.3f, roc_auc=%.3f",
             recall,
             precision,
             f1,

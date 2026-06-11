@@ -4,7 +4,7 @@ Data validation for the patient deterioration pipeline.
 Clinical context:
     Data quality is a patient safety issue. Corrupt, incomplete, or out-of-range
     clinical measurements can cause the model to produce unreliable predictions
-    with high confidence — the worst possible failure mode.
+    with high confidence - the worst possible failure mode.
 
     These checks run before training begins and fail loudly. A failed validation
     stops the pipeline and pages the on-call engineer. Silent propagation of bad
@@ -13,7 +13,7 @@ Clinical context:
     PHI note: In a real system, this module would also verify that all patient
     identifiers (MRN, name, date of birth, ZIP code) have been stripped or
     tokenised before data enters this pipeline. The public Heart Failure dataset
-    contains no PHI — it is fully de-identified at source.
+    contains no PHI - it is fully de-identified at source.
 """
 
 import logging
@@ -43,7 +43,7 @@ EXPECTED_SCHEMA: Dict[str, type] = {
 # Physiologically plausible ranges for clinical measurements
 RANGE_CHECKS: Dict[str, tuple] = {
     "age": (0, 120),           # human lifespan bounds
-    "ejection_fraction": (0, 100),  # percentage — cannot exceed 100%
+    "ejection_fraction": (0, 100),  # percentage - cannot exceed 100%
     "serum_sodium": (100, 200),     # mmol/L; outside this range is life-threatening or impossible
     "serum_creatinine": (0.0, 30.0),  # mg/dL; >30 is incompatible with survival
     "creatinine_phosphokinase": (0, 10_000),  # U/L
@@ -62,7 +62,7 @@ def validate_dataset(df: pd.DataFrame) -> List[str]:
     Clinical context:
         This is the first line of defence against data pipeline issues.
         In healthcare AI, a model trained on corrupted data produces confident
-        but wrong predictions — potentially more dangerous than no prediction
+        but wrong predictions - potentially more dangerous than no prediction
         at all because clinical staff trust it.
 
     Args:
@@ -125,7 +125,7 @@ def _check_null_rates(df: pd.DataFrame) -> List[str]:
 
     Clinical context:
         High missingness often indicates upstream data pipeline failures rather
-        than natural data sparsity. The 5% threshold is conservative — clinical
+        than natural data sparsity. The 5% threshold is conservative - clinical
         models should train on high-quality, largely complete data. Imputing
         away 20% nulls masks a data quality problem rather than solving it.
     """
@@ -147,7 +147,7 @@ def _check_volume(df: pd.DataFrame) -> List[str]:
     Clinical context:
         Training on too few samples risks high-variance models that generalise
         poorly to new patients. The 100-record floor is a minimum safety net,
-        not a quality target — the full heart failure dataset has 299 records.
+        not a quality target - the full heart failure dataset has 299 records.
     """
     if len(df) < MIN_RECORDS:
         return [

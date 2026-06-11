@@ -55,7 +55,7 @@ def load_dataset(path: str) -> pd.DataFrame:
     logger.info("Dataset loaded: %d rows, %d columns", len(df), len(df.columns))
     logger.info("Columns: %s", list(df.columns))
     logger.info(
-        "Target distribution — alive: %d, died: %d (%.1f%% mortality)",
+        "Target distribution - alive: %d, died: %d (%.1f%% mortality)",
         (df["DEATH_EVENT"] == 0).sum(),
         (df["DEATH_EVENT"] == 1).sum(),
         df["DEATH_EVENT"].mean() * 100,

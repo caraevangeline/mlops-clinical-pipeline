@@ -3,7 +3,7 @@ Model rollback for the patient deterioration pipeline.
 
 Clinical context:
     When production model recall drops below the clinical threshold, the first
-    response is always immediate rollback — patient safety before root cause
+    response is always immediate rollback - patient safety before root cause
     analysis. This module restores the previous production model within minutes.
 
     The rollback is possible because promote.py always archives (never deletes)
@@ -41,7 +41,7 @@ def rollback_to_previous(
     Args:
         mlflow_uri: MLflow tracking server URI.
         reason: Human-readable reason for rollback (logged to model version tags
-                for the audit trail — this appears in model governance reports).
+                for the audit trail - this appears in model governance reports).
 
     Returns:
         Version number of the restored model.
@@ -56,7 +56,7 @@ def rollback_to_previous(
     if not archived_versions:
         raise ValueError(
             f"No archived version of '{MODEL_NAME}' available for rollback. "
-            "Cannot restore a previous model — deploy from scratch."
+            "Cannot restore a previous model - deploy from scratch."
         )
 
     # Restore the highest-numbered archived version (most recent previous production)

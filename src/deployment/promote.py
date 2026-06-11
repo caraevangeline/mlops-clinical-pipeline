@@ -3,7 +3,7 @@ Model promotion from Staging to Production in the MLflow model registry.
 
 Clinical context:
     Production promotion is a controlled operation. The previous production model
-    is archived — never deleted — to enable instant rollback without retraining.
+    is archived - never deleted - to enable instant rollback without retraining.
     This is a hard requirement for clinical AI systems: you must always be able to
     restore the previous model within minutes of a detected degradation.
 
@@ -59,7 +59,7 @@ def promote_to_production(
     staging_version = staging_versions[0]
     promotion_time = datetime.now(timezone.utc).isoformat()
 
-    # Archive current production before promoting — preserves rollback capability
+    # Archive current production before promoting - preserves rollback capability
     current_prod = client.get_latest_versions(MODEL_NAME, stages=["Production"])
     if current_prod:
         prev_version = current_prod[0].version

@@ -1,5 +1,5 @@
 """
-Pipeline health monitoring — dead man's switch implementation.
+Pipeline health monitoring - dead man's switch implementation.
 
 Clinical context:
     A silent pipeline failure is the highest-risk failure mode in healthcare AI.
@@ -54,7 +54,7 @@ def write_heartbeat(stage: str) -> None:
     with open(HEARTBEAT_FILE, "w") as f:
         json.dump(heartbeat, f)
 
-    logger.info("Heartbeat written — stage='%s'", stage)
+    logger.info("Heartbeat written - stage='%s'", stage)
 
 
 def check_pipeline_health(
@@ -69,7 +69,7 @@ def check_pipeline_health(
         pipeline is healthy, heartbeats will always be fresh. If this check fires
         an alert, the pipeline has silently failed.
 
-        The 15-minute threshold is generous — the pipeline should complete each
+        The 15-minute threshold is generous - the pipeline should complete each
         stage in under 5 minutes for the heart failure dataset. Adjust for longer
         training jobs.
 

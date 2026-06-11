@@ -3,7 +3,7 @@ Feature engineering for the patient deterioration pipeline.
 
 Clinical context:
     Prepares clinical measurements for model training. StandardScaler normalises
-    features so no single measurement dominates due to scale differences —
+    features so no single measurement dominates due to scale differences -
     creatinine phosphokinase (range ~23–7861 U/L) would otherwise swamp
     ejection fraction (range ~14–80%) in distance-based models.
 
@@ -51,7 +51,7 @@ def engineer_features(
         scaler: Pre-fitted StandardScaler for inference-time transforms.
                 If None, a new scaler is created.
         fit_scaler: Whether to fit the scaler on this data. Set to False when
-                    applying training-time scaling to validation or test data —
+                    applying training-time scaling to validation or test data -
                     never fit a scaler on test data (data leakage).
 
     Returns:
@@ -60,7 +60,7 @@ def engineer_features(
     """
     df = df.copy()
 
-    # Median imputation for any residual nulls — conservative choice that
+    # Median imputation for any residual nulls - conservative choice that
     # doesn't extrapolate beyond observed values
     df[FEATURE_COLUMNS] = df[FEATURE_COLUMNS].fillna(df[FEATURE_COLUMNS].median())
 

@@ -11,7 +11,7 @@ Clinical context:
     year's patients even without any bugs. Drift detection is the early
     warning system.
 
-    This module uses the Kolmogorov-Smirnov (KS) two-sample test — a
+    This module uses the Kolmogorov-Smirnov (KS) two-sample test - a
     non-parametric, distribution-free test appropriate for clinical data
     which is rarely normally distributed.
 """
@@ -57,7 +57,7 @@ def detect_drift(
     Compare current data feature distributions against a reference using the KS test.
 
     Clinical context:
-        p-value < 0.05 indicates the distributions are statistically different —
+        p-value < 0.05 indicates the distributions are statistically different -
         the model may be encountering population shift. Drift in serum_creatinine
         or ejection_fraction is especially concerning as these are the strongest
         mortality predictors.
@@ -114,7 +114,7 @@ def detect_drift(
             mlflow.set_tag("drift_alert", "true")
 
     logger.info(
-        "Drift check: %d/%d features drifted — %s",
+        "Drift check: %d/%d features drifted - %s",
         len(drifted_features),
         len(FEATURE_COLUMNS),
         drifted_features if drifted_features else "none",

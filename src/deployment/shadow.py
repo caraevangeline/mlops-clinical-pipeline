@@ -7,7 +7,7 @@ Clinical context:
     In a canary deployment, a small percentage of real users receive predictions
     from the new model. For a general consumer app, a 1% canary is low-risk.
     For a clinical safety system, even 1% of patients receiving worse predictions
-    is unacceptable — it means real clinical decisions are made on an unvalidated model.
+    is unacceptable - it means real clinical decisions are made on an unvalidated model.
 
     Shadow deployment eliminates this risk: the candidate model runs on all real
     patient data but its predictions are never exposed to clinicians or acted upon.
@@ -44,7 +44,7 @@ def run_shadow_deployment(
         Agreement rate measures how often the candidate model would have made the
         same clinical decision as the production model. < 90% agreement suggests
         the candidate behaves substantially differently and warrants investigation
-        before full promotion — even if its aggregate recall is acceptable.
+        before full promotion - even if its aggregate recall is acceptable.
 
         We also track whether the staging model catches more deteriorations than
         production (false negatives in production that staging catches). A staging
@@ -108,7 +108,7 @@ def run_shadow_deployment(
 
     if not result["shadow_passed"]:
         logger.warning(
-            "Shadow agreement %.3f below threshold %.3f — "
+            "Shadow agreement %.3f below threshold %.3f - "
             "investigate before promoting to production",
             agreement,
             agreement_threshold,
